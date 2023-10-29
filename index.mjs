@@ -56,12 +56,13 @@ async function main() {
 	await sleep(200);
 	csrf = extract_csrf((await req.get('user')).data);
 	await sleep(500);
-	await req.post('user/sign', null, {
+	let res = await req.post('user/sign', null, {
 		headers: { 'X-CSRF-TOKEN': csrf }
 	});
+	console.log(res.data);
 }
 
 main().catch(err => {
-	console.log('Error');
+	console.log('Error', err);
 });
 
