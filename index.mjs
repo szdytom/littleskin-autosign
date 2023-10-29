@@ -70,7 +70,7 @@ async function main() {
 			break;
 		} catch(err) {
 			console.error(`Attempt ${i + 1} failed.`);
-			if (i < maxRetries - 1) {
+			if (i < max_retry - 1) {
 				await sleep(10000); // 10 seconds
 			} else {
 				throw err;
