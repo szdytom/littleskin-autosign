@@ -1,0 +1,28 @@
+name: Daily auto sign-in
+
+on:
+  schedule:
+    - cron: '30 22 * * *' # Runs every day at 06:30 UTC+8
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20' # Use the Node.js version your project requires
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run script
+      run: node index.mjs
+      env:
+        CREDENTIALS: ${{ secrets.CREDENTIALS }} 
+

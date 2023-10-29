@@ -1,0 +1,10 @@
+# Editors
+.vscode
+*.swp
+
+# Node.JS
+node_modules/
+
+# Credentials
+credentials.json
+
