@@ -20,17 +20,10 @@ import axios from 'axios';
 import { wrapper } from 'axios-cookiejar-support';
 import { CookieJar } from 'tough-cookie';
 
-const cookie_jar = new CookieJar();
 const endpoint = 'https://littleskin.cn/';
 
-const req = wrapper(axios.create({
-	jar: cookie_jar,
-	withCredentials: true,
-	baseURL: endpoint,
-	headers: (await import('./headers.json', { assert: { type: 'json' } })).default,
-}));
-
 const credentials = JSON.parse(process.env.CREDENTIALS);
+const headers = (await import('./headers.json', { assert: { type: 'json' } })).default;
 
 function sleep(t) {
 	return new Promise((resolve, reject) => {
@@ -42,7 +35,14 @@ function extract_csrf(page) {
 	return /<meta name="csrf-token" content="(\w+)">/.exec(page)[1];
 }
 
-async function main() {
+async function task() {
+	const cookie_jar = new CookieJar();
+	const req = wrapper(axios.create({
+		jar: cookie_jar,
+		withCredentials: true,
+		baseURL: endpoint,
+		headers,
+	}));
 	let home_page = await req.get('auth/login');
 	let csrf = extract_csrf(home_page.data);
 	await sleep(500);
@@ -62,7 +62,25 @@ async function main() {
 	console.log(res.data);
 }
 
+async function main() {
+	const max_retry = 3;
+	for (let i = 0; i < max_retry; ++i) {
+		try {
+			await task();
+			break;
+		} catch(err) {
+			console.error(`Attempt ${i + 1} failed.`);
+			if (i < maxRetries - 1) {
+				await sleep(10000); // 10 seconds
+			} else {
+				throw err;
+			}
+		}
+	}
+}
+
 main().catch(err => {
-	console.log('Error', err);
+	console.log('Error');
+	process.exit(1);
 });
 
