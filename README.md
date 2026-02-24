@@ -1,3 +1,5 @@
+**UPD 26/02: 近期 Littleskin 添加了有效的人机验证手段，该自动签到系统失效。**
+
 # littleskin-autosign
 
 使用 Github Actions 的 [LittleSkin](https://littleskin.cn/) 自动每日签到。
